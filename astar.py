@@ -1,17 +1,20 @@
 #To run: python astar.py < board-x-x.txt
-class PriorityQueue:
+import heapq
+class PriorityQueue: #store in a min-heap
     def __init__(self):
         self.nodes = []
+
+    def __cmp__(self, other):
+        return cmp(self.f, other.f) #order heap by f(n) value
 
     def is_empty(self):
         return len(self.nodes) == 0
 
     def push(self, node):
-        self.nodes.append(node)
-        self.nodes.sort(key = lambda x: x.f) #sort by f
+        heapq.heappush(self.nodes, node)
 
     def pop(self):
-        return self.nodes.pop()
+        return heapq.heappop(self.nodes)
 
 class Node:
     def __init__(self, position):
