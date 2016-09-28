@@ -1,6 +1,5 @@
 #To run: python astar.py < board-x-x.txt
-import heapq
-class Heap: #We want a max-heap while heapq gives us a min-heap, so we invert all values
+class PriorityQueue:
     def __init__(self):
         self.nodes = []
 
@@ -8,8 +7,11 @@ class Heap: #We want a max-heap while heapq gives us a min-heap, so we invert al
         return len(self.nodes) == 0
 
     def push(self, node):
+        self.nodes.append(node)
+        self.nodes.sort(key = lambda x: x.f) #sort by f
 
-        heapq.push
+    def pop(self):
+        return self.nodes.pop()
 
 class Node:
     def __init__(self, position):
@@ -23,8 +25,12 @@ class Node:
 def a_star(board, start_node, goal_node):
     closed_set = []
 
-    open_set = [start_node]
-    start_node.g = 0
+    open_set = PriorityQueue()
+    start_node.f = 0
+    open_set.push(start_node)
+
+    while not open_set.is_empty():
+        print open_set.pop().position
 
 def main():
     board = read_board()
@@ -32,15 +38,14 @@ def main():
     for line in board:
         print line
 
-    print goal_node(board).position
-    print walls(board)
+    a_star(board, start_node(board), goal_node(board))
 
 #Board reading functions
 def read_board():
     from sys import stdin
 
     board = []
-    for x in stdin.readlines(): #les brettet fra stdin
+    for x in stdin.readlines(): #read board from stdin
         board.append(x.strip())
     return board
 
