@@ -20,19 +20,18 @@ class Node:
     def __init__(self, position):
         self.position = position
         self.parent = None
-        self.g = None
-        self.h = None
-        self.f = None
+        self.g = float("Inf")
+        self.h = float("Inf")
+        self.f = self.g + self.h
         self.weight = None
 
 def a_star(board, start_node, goal_node):
     closed_set = []
 
     open_set = PriorityQueue()
-    start_node.f = 0
+    start_node.g = 0
+    start_node.h = manhattan_distance(start_node, goal_node)
     open_set.push(start_node)
-
-    print manhattan_distance(start_node, goal_node)
 
     while not open_set.is_empty():
         print open_set.pop().position
