@@ -44,11 +44,6 @@ def read_board():
         board.append(x.strip())
     return board
 
-def get_board_nodes(board):
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            if board[i][j] == 'A':
-                return Node((i, j))
 
 def start_node(board):
     for i in range(len(board)):
@@ -62,15 +57,8 @@ def goal_node(board):
             if board[i][j] == 'B':
                 return Node((i, j))
 
-def walls(board):
-    list_of_walls = []
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            if board[i][j] == '#':
-                wall_node = Node((i,j))
-                wall_node.weight = 100 #Represent the node being a wall
-                list_of_walls.append(wall_node)
-    return list_of_walls
+def is_goal_node(position_tuple, board):
+    return board[position_tuple[0]][position_tuple[1]] == "B"
 
 def is_wall(position_tuple, board):
     return board[position_tuple[0]][position_tuple[1]] == "#"
