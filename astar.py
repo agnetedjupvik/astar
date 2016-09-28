@@ -32,6 +32,8 @@ def a_star(board, start_node, goal_node):
     start_node.f = 0
     open_set.push(start_node)
 
+    print manhattan_distance(start_node, goal_node)
+
     while not open_set.is_empty():
         print open_set.pop().position
 
@@ -42,6 +44,15 @@ def main():
         print line
 
     a_star(board, start_node(board), goal_node(board))
+
+def manhattan_distance(node, goal_node):
+    node_x = node.position[0]
+    node_y = node.position[1]
+
+    goal_node_x = goal_node.position[0]
+    goal_node_y = goal_node.position[1]
+
+    return abs(node_x - goal_node_x) + abs(node_y - goal_node_y)
 
 #Board reading functions
 def read_board():
