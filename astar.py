@@ -20,7 +20,7 @@ class Node:
     def __init__(self, position):
         self.position = position
         self.parent = None
-        self.g = float("Inf")
+        self.g = float("Inf") #Infinity values for g and h so that we can improve them later
         self.h = float("Inf")
         self.f = self.g + self.h
         self.weight = None
@@ -31,19 +31,54 @@ def a_star(board, start_node, goal_node):
     open_set = PriorityQueue()
     start_node.g = 0
     start_node.h = manhattan_distance(start_node, goal_node)
+    start_node.f = manhattan_distance(start_node, goal_node) #f for initial node is completely heuristic
     open_set.push(start_node)
 
     while not open_set.is_empty():
-        print open_set.pop().position
+        current = open_set.pop()
+
+        if current == goal_node:
+            return path(current)
+
+        closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
+        for node in getNeighbours(current): #TODO: implement getNeighbours
+            if node in closed_set:
+                continue
+
+            neighbor_g = current.g + manhattan_distance(current, node) #use manhattan_distance? else: TODO
+
+            if node not in open_set: #discover new node, visit sometime
+                open_set.push(node)
+            elif neighbor_g >= node.g: #this path is not an augmenting one
+                continue
+
+            #Record our amazing progress on finding a good node which is possibly in the path
+            node.parent = current
+            node.g = parent.g
+            node.h = manhattan_distance(node, goal_node)
+            node.f = parent.g + manhattan_distance(node, goal_node)
+
+    return 0
+
+
 
 def main():
     board = read_board()
+
+    node1 = Node((0,0))
+    node2 = Node((0,1))
+    node2.parent = node1
+    node3 = Node((0,2))
+    node3.parent = node2
+
+    print path(node3)
 
     for line in board:
         print line
 
     a_star(board, start_node(board), goal_node(board))
 
+#Calculate heuristic
 def manhattan_distance(node, goal_node):
     node_x = node.position[0]
     node_y = node.position[1]
@@ -52,6 +87,14 @@ def manhattan_distance(node, goal_node):
     goal_node_y = goal_node.position[1]
 
     return abs(node_x - goal_node_x) + abs(node_y - goal_node_y)
+
+#Get path back to start_node
+def path(node):
+    path = [node.position] #Can alter this to return the entire objects, not just their positions
+    while node.parent != None:
+        path.append(node.parent.position)
+        node = node.parent
+    return path
 
 #Board reading functions
 def read_board():
