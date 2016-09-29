@@ -24,6 +24,10 @@ class Node:
         self.h = float("Inf")
         self.f = self.g + self.h
         self.weight = None
+        self.representation = '.' #Used for printing the board to console
+
+    def __str__(self):
+        return self.representation
 
 def a_star(board, start_node, goal_node):
     closed_set = []
@@ -41,7 +45,7 @@ def a_star(board, start_node, goal_node):
             return path(current)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
-        for node in getNeighbours(current): #TODO: implement getNeighbours
+        for node in getNeighbours(current, board): #TODO: implement getNeighbours
             if node in closed_set:
                 continue
 
@@ -65,18 +69,15 @@ def a_star(board, start_node, goal_node):
 def main():
     board = read_board()
 
-    node1 = Node((0,0))
-    node2 = Node((0,1))
-    node2.parent = node1
-    node3 = Node((0,2))
-    node3.parent = node2
-
-    print path(node3)
-
-    for line in board:
-        print line
+    print_board(board)
 
     a_star(board, start_node(board), goal_node(board))
+
+#Get walkable neighbours for a node
+def getNeighbours(node, board):
+    neighbours = []
+    current_position = node.position
+
 
 #Calculate heuristic
 def manhattan_distance(node, goal_node):
@@ -101,21 +102,40 @@ def read_board():
     from sys import stdin
 
     board = []
-    for x in stdin.readlines(): #read board from stdin
-        board.append(x.strip())
+    i = 0
+    for line in stdin.readlines(): #read board from stdin
+        board_line = []
+        for j in range(len(line)):
+            new_node = Node((i, j))
+            new_node.representation = line[j]
+            board_line.append(new_node) #create node representation of board
+        board.append(board_line)
+        i += 1
+
     return board
+
+def print_board(board):
+    board_representation = []
+    for line in board:
+        line_array = []
+        for node in line:
+            line_array.append(str(node)) #same as node.representation
+        board_representation.append(line_array)
+
+    for line in board_representation:
+        print ''.join(line)
 
 
 def start_node(board):
     for i in range(len(board)):
         for j in range(len(board[i])):
-            if board[i][j] == 'A':
+            if str(board[i][j]) == 'A':
                 return Node((i, j))
 
 def goal_node(board):
     for i in range(len(board)):
         for j in range(len(board[i])):
-            if board[i][j] == 'B':
+            if str(board[i][j]) == 'B':
                 return Node((i, j))
 
 def is_goal_node(position_tuple, board):
