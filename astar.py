@@ -45,7 +45,6 @@ def a_star(board, start_node, goal_node):
             return path(current)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
-        print "Getting neighbours of", current.position, getNeighbours(current, board)
         for node in getNeighbours(current, board):
             if node in closed_set:
                 continue
@@ -81,13 +80,11 @@ def getNeighbours(node, board):
     current_y = node.position[1]
     possible_positions = [(current_x, current_y+1), (current_x, current_y-1), (current_x+1, current_y), (current_x-1, current_y)]
     for position in possible_positions:
-        print "\nTrying position", position
         if (not position[0] == -1) and (not position[1] == -1): #avoid exiting through the beginning of the board
             for line in board: #not optimal.. should be refactored sometime
                 for node in line:
                     if node.position == position:
                         if not is_wall(node.position, board):
-                            print "Success! Adding ", node.position, "with representation", str(node)
                             neighbours.append(node)
     return neighbours
 
