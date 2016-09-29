@@ -76,8 +76,16 @@ def main():
 #Get walkable neighbours for a node
 def getNeighbours(node, board):
     neighbours = []
-    current_position = node.position
-
+    current_x = node.position[0]
+    current_y = node.position[1]
+    possible_positions = [(current_x, current_y+1), (current_x, current_y-1), (current_x+1, current_y), (current_x-1, current_y)]
+    for position in possible_positions:
+        if not position[0] == -1 and not position[0] > len(board) and not position[1] == -1 and not position[1] > len(board): #avoid impossible positions
+            for node in board: #not optimal.. should be refactored sometime
+                if node.position == position:
+                    if not is_wall(node):
+                        neighbours.append(node)
+    return neighbours
 
 #Calculate heuristic
 def manhattan_distance(node, goal_node):
