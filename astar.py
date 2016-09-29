@@ -7,6 +7,12 @@ class PriorityQueue: #store in a min-heap
     def __cmp__(self, other):
         return cmp(self.f, other.f) #order heap by f(n) value
 
+    def contains(self, other):
+        for node in self.nodes:
+            if node.position == other.position:
+                return True
+        return False
+
     def is_empty(self):
         return len(self.nodes) == 0
 
@@ -51,16 +57,16 @@ def a_star(board, start_node, goal_node):
 
             neighbor_g = current.g + manhattan_distance(current, node) #use manhattan_distance? else: TODO
 
-            if node not in open_set: #discover new node, visit sometime
+            if not open_set.contains(node): #discover new node, visit sometime
                 open_set.push(node)
             elif neighbor_g >= node.g: #this path is not an augmenting one
                 continue
 
             #Record our amazing progress on finding a good node which is possibly in the path
             node.parent = current
-            node.g = parent.g
+            node.g = current.g
             node.h = manhattan_distance(node, goal_node)
-            node.f = parent.g + manhattan_distance(node, goal_node)
+            node.f = current.g + manhattan_distance(node, goal_node)
 
     return 0
 
