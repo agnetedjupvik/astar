@@ -45,7 +45,8 @@ def a_star(board, start_node, goal_node):
             return path(current)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
-        for node in getNeighbours(current, board): #TODO: implement getNeighbours
+        print "Getting neighbours of", current.position, getNeighbours(current, board)
+        for node in getNeighbours(current, board):
             if node in closed_set:
                 continue
 
@@ -80,11 +81,14 @@ def getNeighbours(node, board):
     current_y = node.position[1]
     possible_positions = [(current_x, current_y+1), (current_x, current_y-1), (current_x+1, current_y), (current_x-1, current_y)]
     for position in possible_positions:
-        if not position[0] == -1 and not position[0] > len(board) and not position[1] == -1 and not position[1] > len(board): #avoid impossible positions
-            for node in board: #not optimal.. should be refactored sometime
-                if node.position == position:
-                    if not is_wall(node):
-                        neighbours.append(node)
+        print "\nTrying position", position
+        if (not position[0] == -1) and (not position[1] == -1): #avoid exiting through the beginning of the board
+            for line in board: #not optimal.. should be refactored sometime
+                for node in line:
+                    if node.position == position:
+                        if not is_wall(node.position, board):
+                            print "Success! Adding ", node.position, "with representation", str(node)
+                            neighbours.append(node)
     return neighbours
 
 #Calculate heuristic
@@ -147,10 +151,10 @@ def goal_node(board):
                 return Node((i, j))
 
 def is_goal_node(position_tuple, board):
-    return board[position_tuple[0]][position_tuple[1]] == "B"
+    return str(board[position_tuple[0]][position_tuple[1]]) == "B"
 
 def is_wall(position_tuple, board):
-    return board[position_tuple[0]][position_tuple[1]] == "#"
+    return str(board[position_tuple[0]][position_tuple[1]]) == "#"
 
 
 if __name__ == '__main__':
