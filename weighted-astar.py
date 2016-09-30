@@ -63,8 +63,8 @@ def a_star(board, start_node, goal_node):
 
     open_set = PriorityQueue()
     start_node.g = 0
-    start_node.h = manhattan_distance(start_node, goal_node)
-    start_node.f = manhattan_distance(start_node, goal_node) #f for initial node is completely heuristic
+    start_node.h = manhattan_distance(start_node, goal_node, board)
+    start_node.f = manhattan_distance(start_node, goal_node, board) #f for initial node is completely heuristic
     open_set.push(start_node)
     print "We start out at", start_node.position
 
@@ -73,8 +73,8 @@ def a_star(board, start_node, goal_node):
 
         if current.position == goal_node.position:
             print "Yay, we found the goal!"
-            print "The path to the goal was", path(current)
-            return path(current)
+            print "The path to the goal was", path(current, board)
+            return path(current, board)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
         current.representation = 'c'
@@ -82,7 +82,9 @@ def a_star(board, start_node, goal_node):
             if node in closed_set:
                 continue
 
-            neighbor_g = current.g + manhattan_distance(current, node) #use manhattan_distance? else: TODO
+            print "Currents g is", current.g, " and distance from node to goal is", manhattan_distance(current, goal_node, board)
+            neighbor_g = get_total_cost(current) + node.g
+            print "Total cost of getting to current is", get_total_cost(current)
 
             if not open_set.contains(node): #discover new node, visit at some later point
                 open_set.push(node)
@@ -92,9 +94,9 @@ def a_star(board, start_node, goal_node):
 
             #Record our amazing progress on finding a good node which is possibly in the path
             node.parent = current
-            node.g = current.g
-            node.h = manhattan_distance(node, goal_node)
-            node.f = current.g + manhattan_distance(node, goal_node)
+
+            node.h = manhattan_distance(node, goal_node, board)
+            node.f = neighbor_g + manhattan_distance(node, goal_node, board)
             print_board(board)
 
     return 0
@@ -123,8 +125,15 @@ def getNeighbours(node, board):
                             neighbours.append(node)
     return neighbours
 
+def get_total_cost(node):
+    cost = node.g
+    while node.parent != None:
+        cost += node.parent.g
+        node = node.parent
+    return cost
+
 #Calculate heuristic
-def manhattan_distance(node, goal_node):
+def manhattan_distance(node, goal_node, board):
     node_x = node.position[0]
     node_y = node.position[1]
 
@@ -134,11 +143,18 @@ def manhattan_distance(node, goal_node):
     return abs(node_x - goal_node_x) + abs(node_y - goal_node_y)
 
 #Get path back to start_node
-def path(node):
+def path(node, board):
     path = [node.position] #Can alter this to return the entire objects, not just their positions
     while node.parent != None:
         path.append(node.parent.position)
         node = node.parent
+
+    board = print_board(board)
+    for item in path:
+        board[item[0]][item[1]] = '-'
+
+    for line in board:
+        print ''.join(line).strip()
     return path
 
 #Board reading functions
@@ -153,29 +169,22 @@ def read_board():
             new_node = Node((i, j))
             new_node.representation = line[j]
             if new_node.representation == 'w': #this could probably have been done in a more optimal way
-                new_node.weight = 100
+                new_node.g = 100
             elif new_node.representation == "m":
-                new_node.weight = 50
+                new_node.g = 50
             elif new_node.representation == 'f':
-                new_node.weight = 10
+                new_node.g = 10
             elif new_node.representation == 'g':
-                new_node.weight = 5
+                new_node.g = 5
             elif new_node.representation == 'r':
-                new_node.weight = 1
+                new_node.g = 1
+            else:
+                new_node.g = 1
             board_line.append(new_node) #create node representation of board
         board.append(board_line)
         i += 1
 
     return board
-
-'''
-GRASS REPRESENTATIONS
-m mountains, cost 50
-f forests, cost 10
-w water, cost 100
-g grass, cost 5
-r roads, cost 1
-'''
 
 def print_board(board):
     board_representation = []
@@ -187,6 +196,7 @@ def print_board(board):
 
     for line in board_representation:
         print ''.join(line).strip()
+    return board_representation
 
 
 def start_node(board):
