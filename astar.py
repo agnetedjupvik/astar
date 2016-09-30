@@ -1,4 +1,15 @@
 #To run: python astar.py < board-x-x.txt
+
+'''
+NODE REPRESENTATIONS
+. not visited, walkable
+# wall
+A starting node
+B goal node
+o in the open set
+c in the closed set
+
+'''
 import heapq
 class PriorityQueue: #store in a min-heap
     def __init__(self):
@@ -17,10 +28,13 @@ class PriorityQueue: #store in a min-heap
         return len(self.nodes) == 0
 
     def push(self, node):
-        heapq.heappush(self.nodes, node)
+        #heapq.heappush(self.nodes, node)
+        self.nodes.append(node)
+        self.nodes.sort(key=lambda x: x.f, reverse = True)
 
     def pop(self):
-        return heapq.heappop(self.nodes)
+        #return heapq.heappop(self.nodes)
+        return self.nodes.pop()
 
 class Node:
     def __init__(self, position):
@@ -43,30 +57,41 @@ def a_star(board, start_node, goal_node):
     start_node.h = manhattan_distance(start_node, goal_node)
     start_node.f = manhattan_distance(start_node, goal_node) #f for initial node is completely heuristic
     open_set.push(start_node)
+    print "We start out at", start_node.position
 
     while not open_set.is_empty():
+        for node in open_set.nodes:
+            print node.position, "has a f value of ", node.f
         current = open_set.pop()
 
-        if current == goal_node:
+        if current.position == goal_node.position:
+            print "Yay, we found the goal!"
             return path(current)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
+        current.representation = 'c'
         for node in getNeighbours(current, board):
             if node in closed_set:
                 continue
+            print "Working on node at position", node.position, "which had a f value of", node.f
 
             neighbor_g = current.g + manhattan_distance(current, node) #use manhattan_distance? else: TODO
 
-            if not open_set.contains(node): #discover new node, visit sometime
+            if not open_set.contains(node): #discover new node, visit at some later point
                 open_set.push(node)
+                node.representation = 'o'
             elif neighbor_g >= node.g: #this path is not an augmenting one
+                print "Found a non-augmenting path", node.position
                 continue
 
             #Record our amazing progress on finding a good node which is possibly in the path
+            print "Found a node which is possibly in the path!", node.position
             node.parent = current
             node.g = current.g
             node.h = manhattan_distance(node, goal_node)
             node.f = current.g + manhattan_distance(node, goal_node)
+            print "Node at position", node.position, "now has a f value of", node.f
+            print_board(board)
 
     return 0
 
@@ -138,7 +163,7 @@ def print_board(board):
         board_representation.append(line_array)
 
     for line in board_representation:
-        print ''.join(line)
+        print ''.join(line).strip()
 
 
 def start_node(board):
