@@ -10,7 +10,6 @@ o in the open set
 c in the closed set
 
 '''
-import heapq
 class PriorityQueue: #store in a min-heap
     def __init__(self):
         self.nodes = []
@@ -28,13 +27,14 @@ class PriorityQueue: #store in a min-heap
         return len(self.nodes) == 0
 
     def push(self, node):
-        #heapq.heappush(self.nodes, node)
         self.nodes.append(node)
         self.nodes.sort(key=lambda x: x.f, reverse = True)
 
     def pop(self):
-        #return heapq.heappop(self.nodes)
-        return self.nodes.pop()
+        self.nodes.sort(key=lambda x: x.f, reverse = True)
+        node = self.nodes.pop()
+        return node
+
 
 class Node:
     def __init__(self, position):
@@ -63,6 +63,7 @@ def a_star(board, start_node, goal_node):
         for node in open_set.nodes:
             print node.position, "has a f value of ", node.f
         current = open_set.pop()
+        print "We popped node", current.position, "from the open set"
 
         if current.position == goal_node.position:
             print "Yay, we found the goal!"
