@@ -1,4 +1,4 @@
-#To run: python weighted-astar.py < board-x-x.txt
+#To run: python weighted-astar.py < board-2-x.txt
 
 '''
 NODE REPRESENTATIONS
@@ -8,6 +8,15 @@ A starting node
 B goal node
 o in the open set
 c in the closed set
+'''
+
+'''
+GRASS REPRESENTATIONS
+m mountains, cost 50
+f forests, cost 10
+w water, cost 100
+g grass, cost 5
+r roads, cost 1
 '''
 
 class PriorityQueue: #store in a min-heap
@@ -143,11 +152,30 @@ def read_board():
         for j in range(len(line)):
             new_node = Node((i, j))
             new_node.representation = line[j]
+            if new_node.representation == 'w': #this could probably have been done in a more optimal way
+                new_node.weight = 100
+            elif new_node.representation == "m":
+                new_node.weight = 50
+            elif new_node.representation == 'f':
+                new_node.weight = 10
+            elif new_node.representation == 'g':
+                new_node.weight = 5
+            elif new_node.representation == 'r':
+                new_node.weight = 1
             board_line.append(new_node) #create node representation of board
         board.append(board_line)
         i += 1
 
     return board
+
+'''
+GRASS REPRESENTATIONS
+m mountains, cost 50
+f forests, cost 10
+w water, cost 100
+g grass, cost 5
+r roads, cost 1
+'''
 
 def print_board(board):
     board_representation = []

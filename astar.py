@@ -1,4 +1,4 @@
-#To run: python astar.py < board-x-x.txt
+#To run: python astar.py < board-1-x.txt
 
 '''
 NODE REPRESENTATIONS
