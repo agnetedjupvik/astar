@@ -73,7 +73,6 @@ def a_star(board, start_node, goal_node):
 
         if current.position == goal_node.position:
             print "Yay, we found the goal!"
-            print "The path to the goal was", path(current, board)
             return path(current, board)
 
         closed_set.append(current) #could have had this as a PriorityQueue, but didn't really see the point
@@ -82,9 +81,7 @@ def a_star(board, start_node, goal_node):
             if node in closed_set:
                 continue
 
-            print "Currents g is", current.g, " and distance from node to goal is", manhattan_distance(current, goal_node, board)
             neighbor_g = get_total_cost(current) + node.g
-            print "Total cost of getting to current is", get_total_cost(current)
 
             if not open_set.contains(node): #discover new node, visit at some later point
                 open_set.push(node)
@@ -194,8 +191,6 @@ def print_board(board):
             line_array.append(str(node)) #same as node.representation
         board_representation.append(line_array)
 
-    for line in board_representation:
-        print ''.join(line).strip()
     return board_representation
 
 
